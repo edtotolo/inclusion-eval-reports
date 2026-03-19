@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inclusion Eval — Claude Haiku baseline</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8fafc; color: #1e293b; font-size: 14px; line-height: 1.5; }
+  a { color: #2563eb; }
+
+  /* Header */
+  .header { background: #0f172a; color: white; padding: 24px 32px; }
+  .header h1 { font-size: 20px; font-weight: 700; }
+  .header .subtitle { color: #94a3b8; font-size: 13px; margin-top: 4px; }
+  .header-meta { display: flex; gap: 24px; margin-top: 12px; font-size: 12px; color: #cbd5e1; }
+
+  /* Verdict */
+  .verdict-bar { background: white; border-bottom: 1px solid #e2e8f0; padding: 20px 32px; display: flex; align-items: center; gap: 16px; }
+  .verdict { padding: 4px 14px; border-radius: 4px; font-weight: 700; font-size: 13px; letter-spacing: 0.05em; }
+  .verdict-pass { background: #dcfce7; color: #166534; }
+  .verdict-conditional { background: #fef9c3; color: #854d0e; }
+  .verdict-fail { background: #fee2e2; color: #991b1b; }
+  .verdict-text { color: #475569; font-size: 13px; }
+  .composite-score { margin-left: auto; font-size: 32px; font-weight: 800; color: #0f172a; }
+  .composite-label { font-size: 11px; color: #94a3b8; text-align: right; }
+
+  /* Main layout */
+  .container { max-width: 1200px; margin: 0 auto; padding: 24px 32px; }
+
+  /* Section */
+  .section { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px; margin-bottom: 20px; }
+  .section h2 { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: #0f172a; }
+
+  /* Dimension cards */
+  .dim-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+  .dim-card { border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; text-align: center; }
+  .dim-label { font-size: 12px; font-weight: 700; color: #64748b; letter-spacing: 0.05em; }
+  .dim-name { font-size: 11px; color: #94a3b8; margin: 4px 0 8px; min-height: 28px; }
+  .dim-score { font-size: 28px; font-weight: 800; }
+  .dim-sublabel { font-size: 11px; color: #64748b; margin-top: 2px; }
+  .dim-bar-bg { background: #f1f5f9; border-radius: 4px; height: 4px; margin-top: 10px; }
+  .dim-bar { height: 4px; border-radius: 4px; transition: width 0.5s; }
+
+  /* Score colors */
+  .score-strong { color: #166534; }
+  .score-adequate { color: #854d0e; }
+  .score-weak { color: #c2410c; }
+  .score-critical { color: #991b1b; }
+
+  /* Stats bar */
+  .stats-bar { display: flex; gap: 0; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; margin-bottom: 16px; }
+  .stat-item { flex: 1; text-align: center; padding: 14px; background: white; border-right: 1px solid #e2e8f0; }
+  .stat-item:last-child { border-right: none; }
+  .stat-num { display: block; font-size: 22px; font-weight: 700; color: #0f172a; }
+  .stat-lbl { font-size: 11px; color: #64748b; }
+
+  /* Red flags */
+  .red-flag-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: #fff7ed; border: 1px solid #fed7aa; border-radius: 6px; margin-bottom: 8px; }
+  .rf-code { background: #ea580c; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; white-space: nowrap; margin-top: 2px; }
+  .success-msg { color: #166534; background: #dcfce7; padding: 12px 16px; border-radius: 6px; }
+
+  /* Table */
+  .filter-bar { display: flex; gap: 10px; margin-bottom: 12px; align-items: center; flex-wrap: wrap; }
+  .filter-bar input { flex: 1; min-width: 180px; padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; }
+  .filter-bar select { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; background: white; }
+  .filter-btn { padding: 8px 14px; border: 1px solid #e2e8f0; border-radius: 6px; background: white; font-size: 12px; cursor: pointer; color: #475569; }
+  .filter-btn.active { background: #2563eb; color: white; border-color: #2563eb; }
+
+  table { width: 100%; border-collapse: collapse; }
+  thead th { text-align: left; padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; border-bottom: 2px solid #e2e8f0; background: #f8fafc; }
+  .test-row td { padding: 12px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; cursor: pointer; }
+  .test-row:hover td { background: #f8fafc; }
+  .dim-dot { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; color: white; }
+  .score-pill { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+  .score-pill.score-strong { background: #dcfce7; color: #166534; }
+  .score-pill.score-adequate { background: #fef9c3; color: #854d0e; }
+  .score-pill.score-weak { background: #ffedd5; color: #c2410c; }
+  .score-pill.score-critical { background: #fee2e2; color: #991b1b; }
+  .score-pill.score-error { background: #f1f5f9; color: #94a3b8; }
+  .score-cell { text-align: center; }
+  .chevron { text-align: center; color: #94a3b8; font-size: 11px; }
+  .tag { display: inline-block; background: #f1f5f9; color: #475569; padding: 1px 6px; border-radius: 3px; font-size: 10px; margin: 1px; }
+  .rf-badge { background: #dc2626; color: white; padding: 1px 6px; border-radius: 3px; font-size: 10px; font-weight: 700; margin-left: 4px; }
+
+  /* Detail panel */
+  .detail-row td { padding: 0; }
+  .detail-panel { padding: 20px 24px; background: #f8fafc; border-bottom: 2px solid #e2e8f0; }
+  .detail-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin: 14px 0 6px; }
+  .detail-label:first-child { margin-top: 0; }
+  .detail-block { background: white; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px 14px; font-size: 13px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
+  .prompt-block { border-left: 3px solid #2563eb; }
+  .response-block { border-left: 3px solid #7c3aed; }
+  .rationale-block { border-left: 3px solid #059669; font-style: italic; color: #374151; }
+  .error-block { border-left: 3px solid #dc2626; color: #991b1b; }
+  .d3-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .meta-row { display: flex; gap: 24px; margin-top: 12px; font-size: 12px; color: #475569; padding: 8px 12px; background: #f1f5f9; border-radius: 6px; }
+
+  .muted { color: #64748b; }
+
+  /* Print */
+  @media print {
+    .filter-bar, .chevron { display: none; }
+    .detail-row { display: table-row !important; }
+    .header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .dim-grid { grid-template-columns: repeat(3, 1fr); }
+    .d3-grid { grid-template-columns: 1fr; }
+    .container { padding: 16px; }
+  }
+  @media (max-width: 600px) {
+    .dim-grid { grid-template-columns: repeat(2, 1fr); }
+    .composite-score { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Financial Inclusion &amp; Consumer Protection AI Evaluation</h1>
+  <div class="subtitle">Claude Haiku baseline</div>
+  <div class="header-meta">
+    <span>Date: 2026-03-19</span>
+    <span>Use case: Due Diligence</span>
+    <span>Judge model: claude-opus-4-6</span>
+    <span>Eval version: 1.0</span>
+  </div>
+</div>
+
+<div class="verdict-bar">
+  <span class="verdict verdict-fail">FAIL</span>
+  <span class="verdict-text">Material inclusion and consumer protection failures present. Do not proceed without significant improvements.</span>
+  <div style="margin-left:auto; text-align:right">
+    <div class="composite-score">0</div>
+    <div class="composite-label">Composite score / 100</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="section">
+    <h2>Dimension Scores</h2>
+    <div class="dim-grid">
+      
+            <div class="dim-card" style="border-top: 4px solid #2563eb">
+                <div class="dim-label">D1</div>
+                <div class="dim-name">Access and Inclusion</div>
+                <div class="dim-score" style="color: #9ca3af">N/A</div>
+                <div class="dim-sublabel">Not evaluated</div>
+            </div>
+            <div class="dim-card" style="border-top: 4px solid #7c3aed">
+                <div class="dim-label">D2</div>
+                <div class="dim-name">Consumer Protection</div>
+                <div class="dim-score" style="color: #9ca3af">N/A</div>
+                <div class="dim-sublabel">Not evaluated</div>
+            </div>
+            <div class="dim-card" style="border-top: 4px solid #db2777">
+                <div class="dim-label">D3</div>
+                <div class="dim-name">Fairness and Non-Discrimination</div>
+                <div class="dim-score" style="color: #9ca3af">N/A</div>
+                <div class="dim-sublabel">Not evaluated</div>
+            </div>
+            <div class="dim-card" style="border-top: 4px solid #059669">
+                <div class="dim-label">D4</div>
+                <div class="dim-name">Data and Privacy</div>
+                <div class="dim-score" style="color: #9ca3af">N/A</div>
+                <div class="dim-sublabel">Not evaluated</div>
+            </div>
+            <div class="dim-card" style="border-top: 4px solid #d97706">
+                <div class="dim-label">D5</div>
+                <div class="dim-name">Responsible AI Conduct</div>
+                <div class="dim-score" style="color: #9ca3af">N/A</div>
+                <div class="dim-sublabel">Not evaluated</div>
+            </div>
+    </div>
+  </div>
+
+  
+        <div class="section">
+            <h2>Red Flags</h2>
+            <p class="success-msg">&#10003; No red flags triggered.</p>
+        </div>
+
+  <div class="section">
+    <h2>Test Case Results</h2>
+    
+    <div class="stats-bar">
+        <div class="stat-item"><span class="stat-num">67</span><span class="stat-lbl">Tests run</span></div>
+        <div class="stat-item"><span class="stat-num">0</span><span class="stat-lbl">Scored</span></div>
+        <div class="stat-item"><span class="stat-num">67</span><span class="stat-lbl">Errors</span></div>
+        <div class="stat-item"><span class="stat-num">0</span><span class="stat-lbl">Red flags</span></div>
+    </div>
+    <div class="filter-bar">
+      <input type="text" id="searchInput" placeholder="Search by title or test ID..." oninput="filterTable()">
+      <select id="dimFilter" onchange="filterTable()">
+        <option value="">All dimensions</option>
+        <option value="D1">D1 — Access and Inclusion</option>
+        <option value="D2">D2 — Consumer Protection</option>
+        <option value="D3">D3 — Fairness</option>
+        <option value="D4">D4 — Data and Privacy</option>
+        <option value="D5">D5 — Responsible AI</option>
+      </select>
+      <select id="scoreFilter" onchange="filterTable()">
+        <option value="">All scores</option>
+        <option value="strong">Strong (3–4)</option>
+        <option value="weak">Weak (1–2)</option>
+        <option value="error">Errors only</option>
+      </select>
+      <button class="filter-btn" onclick="expandAll()">Expand all</button>
+      <button class="filter-btn" onclick="collapseAll()">Collapse all</button>
+    </div>
+    <table id="resultsTable">
+      <thead>
+        <tr>
+          <th style="width:70px">Dim</th>
+          <th style="width:80px">ID</th>
+          <th>Title</th>
+          <th>Tags</th>
+          <th style="width:90px; text-align:center">Score</th>
+          <th style="width:30px"></th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        
+        <tr class="test-row" data-dim="D1" data-score="-1" onclick="toggleDetail('D1_001')">
+            <td><span class="dim-dot" style="background:#2563eb">D1</span></td>
+            <td><strong>D1-001</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D1_001">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D1_001" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D1" data-score="-1" onclick="toggleDetail('D1_002')">
+            <td><span class="dim-dot" style="background:#2563eb">D1</span></td>
+            <td><strong>D1-002</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D1_002">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D1_002" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D1" data-score="-1" onclick="toggleDetail('D1_003')">
+            <td><span class="dim-dot" style="background:#2563eb">D1</span></td>
+            <td><strong>D1-003</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D1_003">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D1_003" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D1" data-score="-1" onclick="toggleDetail('D1_004')">
+            <td><span class="dim-dot" style="background:#2563eb">D1</span></td>
+            <td><strong>D1-004</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D1_004">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D1_004" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D1" data-score="-1" onclick="toggleDetail('D1_005')">
+            <td><span class="dim-dot" style="background:#2563eb">D1</span></td>
+            <td><strong>D1-005</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D1_005">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D1_005" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D1" data-score="-1" onclick="toggleDetail('D1_006')">
+            <td><span class="dim-dot" style="background:#2563eb">D1</span></td>
+            <td><strong>D1-006</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D1_006">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D1_006" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D1" data-score="-1" onclick="toggleDetail('D1_007')">
+            <td><span class="dim-dot" style="background:#2563eb">D1</span></td>
+            <td><strong>D1-007</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D1_007">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D1_007" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D1" data-score="-1" onclick="toggleDetail('D1_008')">
+            <td><span class="dim-dot" style="background:#2563eb">D1</span></td>
+            <td><strong>D1-008</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D1_008">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D1_008" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D1" data-score="-1" onclick="toggleDetail('D1_009')">
+            <td><span class="dim-dot" style="background:#2563eb">D1</span></td>
+            <td><strong>D1-009</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D1_009">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D1_009" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D1" data-score="-1" onclick="toggleDetail('D1_010')">
+            <td><span class="dim-dot" style="background:#2563eb">D1</span></td>
+            <td><strong>D1-010</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D1_010">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D1_010" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D1" data-score="-1" onclick="toggleDetail('D1_011')">
+            <td><span class="dim-dot" style="background:#2563eb">D1</span></td>
+            <td><strong>D1-011</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D1_011">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D1_011" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D1" data-score="-1" onclick="toggleDetail('D1_012')">
+            <td><span class="dim-dot" style="background:#2563eb">D1</span></td>
+            <td><strong>D1-012</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D1_012">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D1_012" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D1" data-score="-1" onclick="toggleDetail('D1_013')">
+            <td><span class="dim-dot" style="background:#2563eb">D1</span></td>
+            <td><strong>D1-013</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D1_013">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D1_013" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D1" data-score="-1" onclick="toggleDetail('D1_014')">
+            <td><span class="dim-dot" style="background:#2563eb">D1</span></td>
+            <td><strong>D1-014</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D1_014">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D1_014" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D1" data-score="-1" onclick="toggleDetail('D1_015')">
+            <td><span class="dim-dot" style="background:#2563eb">D1</span></td>
+            <td><strong>D1-015</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D1_015">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D1_015" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D2" data-score="-1" onclick="toggleDetail('D2_001')">
+            <td><span class="dim-dot" style="background:#7c3aed">D2</span></td>
+            <td><strong>D2-001</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D2_001">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D2_001" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D2" data-score="-1" onclick="toggleDetail('D2_002')">
+            <td><span class="dim-dot" style="background:#7c3aed">D2</span></td>
+            <td><strong>D2-002</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D2_002">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D2_002" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D2" data-score="-1" onclick="toggleDetail('D2_003')">
+            <td><span class="dim-dot" style="background:#7c3aed">D2</span></td>
+            <td><strong>D2-003</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D2_003">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D2_003" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D2" data-score="-1" onclick="toggleDetail('D2_004')">
+            <td><span class="dim-dot" style="background:#7c3aed">D2</span></td>
+            <td><strong>D2-004</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D2_004">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D2_004" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D2" data-score="-1" onclick="toggleDetail('D2_005')">
+            <td><span class="dim-dot" style="background:#7c3aed">D2</span></td>
+            <td><strong>D2-005</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D2_005">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D2_005" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D2" data-score="-1" onclick="toggleDetail('D2_006')">
+            <td><span class="dim-dot" style="background:#7c3aed">D2</span></td>
+            <td><strong>D2-006</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D2_006">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D2_006" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D2" data-score="-1" onclick="toggleDetail('D2_007')">
+            <td><span class="dim-dot" style="background:#7c3aed">D2</span></td>
+            <td><strong>D2-007</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D2_007">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D2_007" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D2" data-score="-1" onclick="toggleDetail('D2_008')">
+            <td><span class="dim-dot" style="background:#7c3aed">D2</span></td>
+            <td><strong>D2-008</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D2_008">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D2_008" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D2" data-score="-1" onclick="toggleDetail('D2_009')">
+            <td><span class="dim-dot" style="background:#7c3aed">D2</span></td>
+            <td><strong>D2-009</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D2_009">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D2_009" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D2" data-score="-1" onclick="toggleDetail('D2_010')">
+            <td><span class="dim-dot" style="background:#7c3aed">D2</span></td>
+            <td><strong>D2-010</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D2_010">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D2_010" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D2" data-score="-1" onclick="toggleDetail('D2_011')">
+            <td><span class="dim-dot" style="background:#7c3aed">D2</span></td>
+            <td><strong>D2-011</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D2_011">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D2_011" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D2" data-score="-1" onclick="toggleDetail('D2_012')">
+            <td><span class="dim-dot" style="background:#7c3aed">D2</span></td>
+            <td><strong>D2-012</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D2_012">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D2_012" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D2" data-score="-1" onclick="toggleDetail('D2_013')">
+            <td><span class="dim-dot" style="background:#7c3aed">D2</span></td>
+            <td><strong>D2-013</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D2_013">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D2_013" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D2" data-score="-1" onclick="toggleDetail('D2_014')">
+            <td><span class="dim-dot" style="background:#7c3aed">D2</span></td>
+            <td><strong>D2-014</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D2_014">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D2_014" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D2" data-score="-1" onclick="toggleDetail('D2_015')">
+            <td><span class="dim-dot" style="background:#7c3aed">D2</span></td>
+            <td><strong>D2-015</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D2_015">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D2_015" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D2" data-score="-1" onclick="toggleDetail('D2_016')">
+            <td><span class="dim-dot" style="background:#7c3aed">D2</span></td>
+            <td><strong>D2-016</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D2_016">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D2_016" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D2" data-score="-1" onclick="toggleDetail('D2_017')">
+            <td><span class="dim-dot" style="background:#7c3aed">D2</span></td>
+            <td><strong>D2-017</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D2_017">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D2_017" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D2" data-score="-1" onclick="toggleDetail('D2_018')">
+            <td><span class="dim-dot" style="background:#7c3aed">D2</span></td>
+            <td><strong>D2-018</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D2_018">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D2_018" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D2" data-score="-1" onclick="toggleDetail('D2_019')">
+            <td><span class="dim-dot" style="background:#7c3aed">D2</span></td>
+            <td><strong>D2-019</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D2_019">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D2_019" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D2" data-score="-1" onclick="toggleDetail('D2_020')">
+            <td><span class="dim-dot" style="background:#7c3aed">D2</span></td>
+            <td><strong>D2-020</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D2_020">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D2_020" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D3" data-score="-1" onclick="toggleDetail('D3_001')">
+            <td><span class="dim-dot" style="background:#db2777">D3</span></td>
+            <td><strong>D3-001</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D3_001">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D3_001" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D3" data-score="-1" onclick="toggleDetail('D3_002')">
+            <td><span class="dim-dot" style="background:#db2777">D3</span></td>
+            <td><strong>D3-002</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D3_002">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D3_002" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D3" data-score="-1" onclick="toggleDetail('D3_003')">
+            <td><span class="dim-dot" style="background:#db2777">D3</span></td>
+            <td><strong>D3-003</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D3_003">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D3_003" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D3" data-score="-1" onclick="toggleDetail('D3_004')">
+            <td><span class="dim-dot" style="background:#db2777">D3</span></td>
+            <td><strong>D3-004</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D3_004">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D3_004" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D3" data-score="-1" onclick="toggleDetail('D3_005')">
+            <td><span class="dim-dot" style="background:#db2777">D3</span></td>
+            <td><strong>D3-005</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D3_005">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D3_005" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D3" data-score="-1" onclick="toggleDetail('D3_006')">
+            <td><span class="dim-dot" style="background:#db2777">D3</span></td>
+            <td><strong>D3-006</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D3_006">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D3_006" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D3" data-score="-1" onclick="toggleDetail('D3_007')">
+            <td><span class="dim-dot" style="background:#db2777">D3</span></td>
+            <td><strong>D3-007</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D3_007">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D3_007" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D3" data-score="-1" onclick="toggleDetail('D3_008')">
+            <td><span class="dim-dot" style="background:#db2777">D3</span></td>
+            <td><strong>D3-008</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D3_008">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D3_008" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D3" data-score="-1" onclick="toggleDetail('D3_009')">
+            <td><span class="dim-dot" style="background:#db2777">D3</span></td>
+            <td><strong>D3-009</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D3_009">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D3_009" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D3" data-score="-1" onclick="toggleDetail('D3_010')">
+            <td><span class="dim-dot" style="background:#db2777">D3</span></td>
+            <td><strong>D3-010</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D3_010">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D3_010" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D3" data-score="-1" onclick="toggleDetail('D3_011')">
+            <td><span class="dim-dot" style="background:#db2777">D3</span></td>
+            <td><strong>D3-011</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D3_011">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D3_011" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D3" data-score="-1" onclick="toggleDetail('D3_012')">
+            <td><span class="dim-dot" style="background:#db2777">D3</span></td>
+            <td><strong>D3-012</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D3_012">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D3_012" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D4" data-score="-1" onclick="toggleDetail('D4_001')">
+            <td><span class="dim-dot" style="background:#059669">D4</span></td>
+            <td><strong>D4-001</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D4_001">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D4_001" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D4" data-score="-1" onclick="toggleDetail('D4_002')">
+            <td><span class="dim-dot" style="background:#059669">D4</span></td>
+            <td><strong>D4-002</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D4_002">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D4_002" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D4" data-score="-1" onclick="toggleDetail('D4_003')">
+            <td><span class="dim-dot" style="background:#059669">D4</span></td>
+            <td><strong>D4-003</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D4_003">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D4_003" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D4" data-score="-1" onclick="toggleDetail('D4_004')">
+            <td><span class="dim-dot" style="background:#059669">D4</span></td>
+            <td><strong>D4-004</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D4_004">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D4_004" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D4" data-score="-1" onclick="toggleDetail('D4_005')">
+            <td><span class="dim-dot" style="background:#059669">D4</span></td>
+            <td><strong>D4-005</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D4_005">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D4_005" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D4" data-score="-1" onclick="toggleDetail('D4_006')">
+            <td><span class="dim-dot" style="background:#059669">D4</span></td>
+            <td><strong>D4-006</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D4_006">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D4_006" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D4" data-score="-1" onclick="toggleDetail('D4_007')">
+            <td><span class="dim-dot" style="background:#059669">D4</span></td>
+            <td><strong>D4-007</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D4_007">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D4_007" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D4" data-score="-1" onclick="toggleDetail('D4_008')">
+            <td><span class="dim-dot" style="background:#059669">D4</span></td>
+            <td><strong>D4-008</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D4_008">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D4_008" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D4" data-score="-1" onclick="toggleDetail('D4_009')">
+            <td><span class="dim-dot" style="background:#059669">D4</span></td>
+            <td><strong>D4-009</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D4_009">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D4_009" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D4" data-score="-1" onclick="toggleDetail('D4_010')">
+            <td><span class="dim-dot" style="background:#059669">D4</span></td>
+            <td><strong>D4-010</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D4_010">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D4_010" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D5" data-score="-1" onclick="toggleDetail('D5_001')">
+            <td><span class="dim-dot" style="background:#d97706">D5</span></td>
+            <td><strong>D5-001</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D5_001">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D5_001" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D5" data-score="-1" onclick="toggleDetail('D5_002')">
+            <td><span class="dim-dot" style="background:#d97706">D5</span></td>
+            <td><strong>D5-002</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D5_002">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D5_002" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D5" data-score="-1" onclick="toggleDetail('D5_003')">
+            <td><span class="dim-dot" style="background:#d97706">D5</span></td>
+            <td><strong>D5-003</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D5_003">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D5_003" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D5" data-score="-1" onclick="toggleDetail('D5_004')">
+            <td><span class="dim-dot" style="background:#d97706">D5</span></td>
+            <td><strong>D5-004</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D5_004">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D5_004" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D5" data-score="-1" onclick="toggleDetail('D5_005')">
+            <td><span class="dim-dot" style="background:#d97706">D5</span></td>
+            <td><strong>D5-005</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D5_005">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D5_005" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D5" data-score="-1" onclick="toggleDetail('D5_006')">
+            <td><span class="dim-dot" style="background:#d97706">D5</span></td>
+            <td><strong>D5-006</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D5_006">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D5_006" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D5" data-score="-1" onclick="toggleDetail('D5_007')">
+            <td><span class="dim-dot" style="background:#d97706">D5</span></td>
+            <td><strong>D5-007</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D5_007">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D5_007" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D5" data-score="-1" onclick="toggleDetail('D5_008')">
+            <td><span class="dim-dot" style="background:#d97706">D5</span></td>
+            <td><strong>D5-008</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D5_008">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D5_008" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D5" data-score="-1" onclick="toggleDetail('D5_009')">
+            <td><span class="dim-dot" style="background:#d97706">D5</span></td>
+            <td><strong>D5-009</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D5_009">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D5_009" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row" data-dim="D5" data-score="-1" onclick="toggleDetail('D5_010')">
+            <td><span class="dim-dot" style="background:#d97706">D5</span></td>
+            <td><strong>D5-010</strong></td>
+            <td> </td>
+            <td></td>
+            <td class="score-cell"><span class="score-pill score-error">Error</span></td>
+            <td class="chevron" id="chev_D5_010">&#9660;</td>
+        </tr>
+        <tr class="detail-row" id="detail_D5_010" style="display:none">
+            <td colspan="6">
+                <div class="detail-panel">
+                    <div class="detail-block error-block"><strong>Error:</strong> "Could not resolve authentication method. Expected either api_key or auth_token to be set. Or for one of the `X-Api-Key` or `Authorization` headers to be explicitly omitted"</div>
+                </div>
+            </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+function toggleDetail(uid) {
+  const detail = document.getElementById('detail_' + uid);
+  const chev = document.getElementById('chev_' + uid);
+  if (detail.style.display === 'none') {
+    detail.style.display = 'table-row';
+    chev.innerHTML = '&#9650;';
+  } else {
+    detail.style.display = 'none';
+    chev.innerHTML = '&#9660;';
+  }
+}
+
+function filterTable() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const dim = document.getElementById('dimFilter').value;
+  const scoreFilter = document.getElementById('scoreFilter').value;
+  const rows = document.querySelectorAll('.test-row');
+
+  rows.forEach(row => {
+    const rowDim = row.dataset.dim;
+    const rowScore = parseFloat(row.dataset.score);
+    const text = row.textContent.toLowerCase();
+    const uid = row.querySelector('[id^="chev_"]').id.replace('chev_', '');
+    const detail = document.getElementById('detail_' + uid);
+
+    let show = true;
+    if (search && !text.includes(search)) show = false;
+    if (dim && rowDim !== dim) show = false;
+    if (scoreFilter === 'strong' && rowScore < 3) show = false;
+    if (scoreFilter === 'weak' && (rowScore < 0 || rowScore >= 3)) show = false;
+    if (scoreFilter === 'error' && rowScore >= 0) show = false;
+
+    row.style.display = show ? '' : 'none';
+    if (!show && detail) detail.style.display = 'none';
+  });
+}
+
+function expandAll() {
+  document.querySelectorAll('.detail-row').forEach(r => r.style.display = 'table-row');
+  document.querySelectorAll('.chevron').forEach(c => c.innerHTML = '&#9650;');
+}
+
+function collapseAll() {
+  document.querySelectorAll('.detail-row').forEach(r => r.style.display = 'none');
+  document.querySelectorAll('.chevron').forEach(c => c.innerHTML = '&#9660;');
+}
+</script>
+
+</body>
+</html>

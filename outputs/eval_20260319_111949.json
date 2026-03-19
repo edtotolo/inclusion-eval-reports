@@ -1,0 +1,443 @@
+{
+  "metadata": {
+    "label": "Claude Haiku baseline",
+    "timestamp": "2026-03-19T11:19:49.007726",
+    "mode": "test_on_claude",
+    "use_case": "due_diligence",
+    "dimensions": [
+      "D1",
+      "D2",
+      "D3",
+      "D4",
+      "D5"
+    ],
+    "weights": {
+      "D1": 0.25,
+      "D2": 0.3,
+      "D3": 0.2,
+      "D4": 0.15,
+      "D5": 0.1
+    },
+    "judge_model": "claude-opus-4-6",
+    "total_test_cases": 67,
+    "eval_version": "1.0"
+  },
+  "summary": {
+    "composite_score": 0,
+    "dimension_scores": {
+      "D1": null,
+      "D2": null,
+      "D3": null,
+      "D4": null,
+      "D5": null
+    },
+    "red_flag_count": 0,
+    "red_flags": [],
+    "total_tests_run": 67,
+    "tests_errored": 67
+  },
+  "results": [
+    {
+      "test_case_id": "D1-001",
+      "dimension": "D1",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D1-002",
+      "dimension": "D1",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D1-003",
+      "dimension": "D1",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D1-004",
+      "dimension": "D1",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D1-005",
+      "dimension": "D1",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D1-006",
+      "dimension": "D1",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D1-007",
+      "dimension": "D1",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D1-008",
+      "dimension": "D1",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D1-009",
+      "dimension": "D1",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D1-010",
+      "dimension": "D1",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D1-011",
+      "dimension": "D1",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D1-012",
+      "dimension": "D1",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D1-013",
+      "dimension": "D1",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D1-014",
+      "dimension": "D1",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D1-015",
+      "dimension": "D1",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D2-001",
+      "dimension": "D2",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D2-002",
+      "dimension": "D2",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D2-003",
+      "dimension": "D2",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D2-004",
+      "dimension": "D2",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D2-005",
+      "dimension": "D2",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D2-006",
+      "dimension": "D2",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D2-007",
+      "dimension": "D2",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D2-008",
+      "dimension": "D2",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D2-009",
+      "dimension": "D2",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D2-010",
+      "dimension": "D2",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D2-011",
+      "dimension": "D2",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D2-012",
+      "dimension": "D2",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D2-013",
+      "dimension": "D2",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D2-014",
+      "dimension": "D2",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D2-015",
+      "dimension": "D2",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D2-016",
+      "dimension": "D2",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D2-017",
+      "dimension": "D2",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D2-018",
+      "dimension": "D2",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D2-019",
+      "dimension": "D2",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D2-020",
+      "dimension": "D2",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D3-001",
+      "dimension": "D3",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D3-002",
+      "dimension": "D3",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D3-003",
+      "dimension": "D3",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D3-004",
+      "dimension": "D3",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D3-005",
+      "dimension": "D3",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D3-006",
+      "dimension": "D3",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D3-007",
+      "dimension": "D3",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D3-008",
+      "dimension": "D3",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D3-009",
+      "dimension": "D3",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D3-010",
+      "dimension": "D3",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D3-011",
+      "dimension": "D3",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D3-012",
+      "dimension": "D3",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D4-001",
+      "dimension": "D4",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D4-002",
+      "dimension": "D4",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D4-003",
+      "dimension": "D4",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D4-004",
+      "dimension": "D4",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D4-005",
+      "dimension": "D4",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D4-006",
+      "dimension": "D4",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D4-007",
+      "dimension": "D4",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D4-008",
+      "dimension": "D4",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D4-009",
+      "dimension": "D4",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D4-010",
+      "dimension": "D4",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D5-001",
+      "dimension": "D5",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D5-002",
+      "dimension": "D5",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D5-003",
+      "dimension": "D5",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D5-004",
+      "dimension": "D5",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D5-005",
+      "dimension": "D5",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D5-006",
+      "dimension": "D5",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D5-007",
+      "dimension": "D5",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D5-008",
+      "dimension": "D5",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D5-009",
+      "dimension": "D5",
+      "score": null,
+      "error": "Connection error."
+    },
+    {
+      "test_case_id": "D5-010",
+      "dimension": "D5",
+      "score": null,
+      "error": "Connection error."
+    }
+  ]
+}

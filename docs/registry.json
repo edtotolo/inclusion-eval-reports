@@ -1,0 +1,10 @@
+[
+  {
+    "label": "Claude Haiku baseline",
+    "date": "2026-03-19T08:27:56.489172",
+    "composite": 0,
+    "red_flags": 0,
+    "verdict": "fail",
+    "filename": "haiku_baseline_report.html"
+  }
+]
