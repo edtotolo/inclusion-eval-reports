@@ -10,13 +10,22 @@
       "file": "haiku_v2_baseline_report.html"
     },
     {
-      "label": "ChatGPT GPT-4o",
+      "label": "ChatGPT GPT-4o — Run 1",
       "date": "2026-03-20",
       "composite_score": 63.7,
       "red_flag_count": 7,
       "auto_fail": true,
       "verdict": "conditional",
       "file": "gpt4o_v2_report.html"
+    },
+    {
+      "label": "ChatGPT GPT-4o — Run 2 (with sentiment analysis)",
+      "date": "2026-03-20",
+      "composite_score": 69.0,
+      "red_flag_count": 6,
+      "auto_fail": true,
+      "verdict": "conditional",
+      "file": "gpt4o_v2_run2_report.html"
     }
   ]
 }
