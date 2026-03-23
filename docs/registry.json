@@ -26,6 +26,15 @@
       "auto_fail": true,
       "verdict": "conditional",
       "file": "gpt4o_v2_run2_report.html"
+    },
+    {
+      "label": "ChatGPT GPT-4o — Fairness Run (multi-turn conversations)",
+      "date": "2026-03-23",
+      "composite_score": 67.4,
+      "red_flag_count": 5,
+      "auto_fail": true,
+      "verdict": "conditional",
+      "file": "gpt4o_fairness_report.html"
     }
   ]
 }
