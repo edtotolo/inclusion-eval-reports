@@ -370,7 +370,7 @@
     <h1>Does this AI treat every user <span>fairly, honestly, and safely?</span></h1>
     <p class="hero-sub">
       A structured evaluation framework for AI applications in finance and commerce.
-      Six dimensions. Thirty-two test cases. Auto-fail conditions for critical failures.
+      Six dimensions. Forty test cases. Multi-turn fairness conversations. Auto-fail conditions for critical failures.
     </p>
     <div class="hero-stats">
       <div class="hero-stat">
@@ -378,7 +378,7 @@
         <div class="label">Evaluation dimensions</div>
       </div>
       <div class="hero-stat">
-        <div class="num">32</div>
+        <div class="num">40</div>
         <div class="label">Test cases</div>
       </div>
       <div class="hero-stat">
@@ -439,7 +439,8 @@
       <h2 class="section-title">Six dimensions. One composite score.</h2>
       <p class="section-sub">
         Each dimension targets a different failure mode. A high composite score with a triggered auto-fail
-        condition is still a critical failure — the scoring system is designed to catch both.
+        condition is still a critical failure — the scoring system is designed to catch both. Scores are
+        supplemented by VADER sentiment analysis and WEAT word embedding tests on all D1 paired cases.
       </p>
     </div>
     <div class="dims-grid">
@@ -447,8 +448,8 @@
       <div class="dim-card dim-d1">
         <div class="dim-id">D1 — Fairness &amp; Non-Discrimination</div>
         <h3>Does it treat all users consistently?</h3>
-        <p>Uses matched pairs — the same question sent with different user profiles (gender, age, literacy, financial stability). Scores consistency of response quality across demographic variables.</p>
-        <div class="dim-tests">6 test cases (4 matched pairs) · Weight: 20%</div>
+        <p>Uses matched pairs run as 4-turn conversations — an opening prompt followed by three shared follow-up questions, identical for both personas. Tests five comparison dimensions: gender, age, financial literacy, financial stability, and household structure.</p>
+        <div class="dim-tests">14 test cases (12 paired conversations + 2 single) · Weight: 20%</div>
         <span class="dim-tag tag-rf">RF-01: Worse treatment for vulnerable group</span>
       </div>
 
@@ -577,7 +578,7 @@
       <div class="use-card">
         <div class="use-icon use-dd">💼</div>
         <h3>Investment Due Diligence</h3>
-        <p>Before investing in a fintech with an AI-powered interface, run a full 32-case assessment. Produces a scored, documented report ready for IC presentation or regulatory disclosure.</p>
+        <p>Before investing in a fintech with an AI-powered interface, run a full 40-case assessment. Produces a scored, documented report ready for IC presentation or regulatory disclosure.</p>
         <ul>
           <li>Pre-investment screening</li>
           <li>IC-ready report with evidence</li>
@@ -589,12 +590,12 @@
       <div class="use-card">
         <div class="use-icon use-adv">📢</div>
         <h3>Consumer Protection Advocacy</h3>
-        <p>Document how specific AI applications treat vulnerable groups. Matched-pair fairness tests produce traceable, comparable evidence for regulatory submissions or public advocacy.</p>
+        <p>Document how specific AI applications treat vulnerable groups. Multi-turn matched-pair fairness tests produce traceable, comparable evidence across five demographic dimensions for regulatory submissions or public advocacy.</p>
         <ul>
-          <li>Matched-pair fairness evidence</li>
-          <li>Gender, age, literacy testing</li>
-          <li>Regulator-ready documentation</li>
-          <li>Systematic monitoring over time</li>
+          <li>Gender, age, literacy, household structure testing</li>
+          <li>4-turn conversations — bias caught across a full interaction</li>
+          <li>NLP sentiment and embedding analysis as supporting evidence</li>
+          <li>Regulator-ready documentation with verbatim AI responses</li>
         </ul>
       </div>
 
@@ -621,8 +622,8 @@
     <h2 class="section-title">Two ways to run an evaluation</h2>
     <p class="section-sub">
       Method A is manual — copy prompts, run them yourself, score the responses.
-      Method B is automated — Python sends all 32 prompts, Claude Opus scores every response,
-      results are saved as JSON and rendered as this interactive report.
+      Method B is automated — Python sends all prompts, Claude Opus scores every response,
+      NLP analyses run automatically, and results are rendered as an interactive report.
     </p>
     <div class="steps">
 
@@ -638,10 +639,10 @@
       <div class="step">
         <div class="step-num">2</div>
         <div class="step-content">
-          <h3>Run 32 test cases across six dimensions</h3>
-          <p>Each test case is a real-world prompt from a user who is desperate, confused, financially vulnerable, low-literacy, or belonging to groups AI systems commonly treat differently. D1 uses matched pairs — the same question with different demographic signals — to measure consistency directly.</p>
-          <span class="step-tag step-tag-manual">Manual: ~1–2 hours</span>
-          <span class="step-tag step-tag-auto" style="margin-left:8px">Automated: ~20–40 min</span>
+          <h3>Run 40 test cases across six dimensions</h3>
+          <p>Each test case is a real-world prompt from a user who is desperate, confused, financially vulnerable, low-literacy, or belonging to groups AI systems commonly treat differently. D1 fairness tests run as 4-turn conversations — an opening prompt followed by three shared follow-up questions, identical for both personas — across five comparison dimensions: gender, age, financial literacy, financial stability, and household structure.</p>
+          <span class="step-tag step-tag-manual">Manual: ~2–3 hours</span>
+          <span class="step-tag step-tag-auto" style="margin-left:8px">Automated: ~30–60 min</span>
         </div>
       </div>
 
@@ -649,7 +650,7 @@
         <div class="step-num">3</div>
         <div class="step-content">
           <h3>Score with the rubric — or let Claude Opus judge</h3>
-          <p>Manual scoring uses detailed rubrics with required criteria, preferred criteria, and fail indicators. Automated scoring uses Claude Opus as an independent judge: it evaluates each response against the rubric, produces a rationale, flags red flags, and lists key strengths and weaknesses.</p>
+          <p>Manual scoring uses detailed rubrics with required criteria, preferred criteria, and fail indicators. Automated scoring uses Claude Opus as an independent judge: it evaluates each response against the rubric, produces a rationale, flags red flags, and lists strengths and weaknesses. For D1 paired tests, the judge scores each persona's full conversation and assesses whether any gap suggests discriminatory treatment.</p>
           <span class="step-tag step-tag-auto">Automated: LLM-as-judge (Claude Opus)</span>
         </div>
       </div>
@@ -657,9 +658,18 @@
       <div class="step">
         <div class="step-num">4</div>
         <div class="step-content">
-          <h3>Read the interactive report</h3>
-          <p>A weighted composite score across six dimensions. Auto-fail conditions checked. Red flags surfaced. Every prompt, response, rationale, strength, and weakness accessible in one page. Ready to share with investors, regulators, or compliance teams.</p>
-          <span class="step-tag step-tag-auto">Automated: HTML report + JSON output</span>
+          <h3>NLP analysis runs automatically</h3>
+          <p>Two quantitative analyses run on D1 paired tests after every automated eval. VADER measures sentiment polarity — whether the AI's tone toward one persona is systematically more positive or negative. WEAT measures word-level associations with positive versus cautionary financial language using GloVe word embeddings. Cases where NLP findings diverge from the judge's score are flagged for human review.</p>
+          <span class="step-tag step-tag-auto">Automated: VADER sentiment · WEAT embeddings</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <h3>Review, override, and share</h3>
+          <p>The interactive HTML report includes a human review panel with two tabs: red flags and auto-fail cases (with score override and reviewer notes), and NLP conflict cases (where automated language analysis disagrees with the judge). Reviewers can export a structured override file. The final report is ready to share with investors, regulators, or compliance teams.</p>
+          <span class="step-tag step-tag-auto">Automated: HTML report + JSON + human review panel</span>
         </div>
       </div>
 
