@@ -148,6 +148,26 @@
   .vader-score-item { white-space: nowrap; }
   .vader-narrative { font-size: 13px; color: #374151; line-height: 1.7; font-style: italic; border-left: 3px solid #2563eb; padding-left: 12px; }
 
+  /* Pillar headers */
+  .pillar-header { padding: 24px 32px; border-top: 4px solid transparent; }
+  .pillar-ai { background: #0f172a; border-top-color: #2563eb; }
+  .pillar-frontier { background: #1e1b4b; border-top-color: #6366f1; }
+  .pillar-inner { max-width: 1300px; margin: 0 auto; display: flex; gap: 40px; align-items: flex-start; }
+  .pillar-left { flex: 1; }
+  .pillar-num { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #60a5fa; margin-bottom: 6px; display: block; }
+  .pillar-num-2 { color: #a5b4fc; }
+  .pillar-title { font-size: 22px; font-weight: 800; color: white; margin-bottom: 8px; }
+  .pillar-desc { font-size: 14px; color: #94a3b8; line-height: 1.7; max-width: 600px; }
+  .pillar-sources { flex: 1; }
+  .pillar-sources-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #64748b; margin-bottom: 10px; }
+  .pillar-sources-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pillar-source-tag { font-size: 12px; color: #cbd5e1; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); padding: 4px 10px; border-radius: 4px; text-decoration: none; transition: background 0.15s; }
+  .pillar-source-tag:hover { background: rgba(255,255,255,0.14); color: white; }
+  .pillar-methods { flex: 1; }
+  .pillar-methods-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pillar-method-tag { font-size: 12px; color: #c7d2fe; background: rgba(99,102,241,0.2); border: 1px solid rgba(99,102,241,0.35); padding: 4px 10px; border-radius: 4px; }
+  .container-frontier { max-width: 1300px; margin: 0 auto; padding: 24px 32px; }
+
   /* Frontier Evaluation Suite */
   .frontier-section { border: 2px solid #6366f1; background: #fafafe; padding: 28px; }
   .ft-header { display: flex; gap: 24px; align-items: flex-start; margin-bottom: 24px; }
@@ -254,7 +274,7 @@
 <body>
 
 <div class="header">
-  <h1>Financial Inclusion &amp; Consumer Protection AI Evaluation — V2</h1>
+  <h1>Inclusion Eval — AI Fairness &amp; Safety Assessment</h1>
   <div class="subtitle">GPT-4o
   Frontier</div>
   <div class="header-meta">
@@ -266,6 +286,29 @@
 </div>
 
 
+
+
+<div class="pillar-header pillar-ai">
+  <div class="pillar-inner">
+    <div class="pillar-left">
+      <span class="pillar-num">Pillar 1</span>
+      <h2 class="pillar-title">AI-Based Evaluation</h2>
+      <p class="pillar-desc">Structured assessment across six responsible finance dimensions. Each test case is scored by Claude Opus against rubrics grounded in established international standards for financial consumer protection and responsible digital finance.</p>
+    </div>
+    <div class="pillar-sources">
+      <div class="pillar-sources-label">Grounded in international standards:</div>
+      <div class="pillar-sources-grid">
+        <a class="pillar-source-tag" href="https://www.oecd.org/finance/financial-education/G20_OECD_Principles_Financial_Consumer_Protection.pdf" target="_blank">OECD High-Level Principles on Financial Consumer Protection</a>
+        <a class="pillar-source-tag" href="https://cerise-sptf.org/universal-standards/" target="_blank">SPTF/Cerise Universal Standards for Social Performance</a>
+        <a class="pillar-source-tag" href="https://www.betterthancash.org/tools-research/case-studies/responsible-digital-payments-guidelines" target="_blank">BTCA Responsible Digital Payments Guidelines</a>
+        <a class="pillar-source-tag" href="https://www.cgap.org/research/publication/customer-protection-principles" target="_blank">CGAP Customer Protection Principles</a>
+        <a class="pillar-source-tag" href="https://www.smartcampaign.org/tools-a-resources/1/71" target="_blank">Smart Campaign Client Protection Principles</a>
+        <a class="pillar-source-tag" href="https://www.afi-global.org/publications/consumer-empowerment-and-market-conduct-guidelines/" target="_blank">AFI Consumer Empowerment &amp; Market Conduct</a>
+        <a class="pillar-source-tag" href="https://www.gpfi.org/publications/g20-financial-inclusion-action-plan" target="_blank">G20 Financial Inclusion Action Plan</a>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="verdict-bar">
   <span class="verdict verdict-conditional">FRONTIER ONLY</span>
@@ -551,10 +594,80 @@
             <p class="success-msg">&#10003; No red flags triggered.</p>
         </div>
 
-  
+  <div class="section">
+    <h2>Test Case Results</h2>
+    
+    <div class="stats-bar">
+        <div class="stat-item"><span class="stat-num">0</span><span class="stat-lbl">Tests run</span></div>
+        <div class="stat-item"><span class="stat-num">0</span><span class="stat-lbl">Scored</span></div>
+        <div class="stat-item"><span class="stat-num">0</span><span class="stat-lbl">Errors</span></div>
+        <div class="stat-item"><span class="stat-num">0</span><span class="stat-lbl">Red flags</span></div>
+        <div class="stat-item"><span class="stat-num "">No</span><span class="stat-lbl">Auto-fail</span></div>
+    </div>
+    <div class="filter-bar">
+      <input type="text" id="searchInput" placeholder="Search by title or test ID..." oninput="filterTable()">
+      <select id="dimFilter" onchange="filterTable()">
+        <option value="">All dimensions</option>
+        <option value="D1">D1 — Fairness and Non-Discrimination</option>
+        <option value="D2">D2 — Truthfulness and Non-Deception</option>
+        <option value="D3">D3 — Transparency and Explainability</option>
+        <option value="D4">D4 — Suitability and Fair Treatment</option>
+        <option value="D5">D5 — Recourse and Human Oversight</option>
+        <option value="D6">D6 — Governance and Monitoring</option>
+      </select>
+      <select id="scoreFilter" onchange="filterTable()">
+        <option value="">All scores</option>
+        <option value="strong">Strong (4–5)</option>
+        <option value="weak">Weak (1–2)</option>
+        <option value="error">Errors only</option>
+      </select>
+      <button class="filter-btn" onclick="expandAll()">Expand all</button>
+      <button class="filter-btn" onclick="collapseAll()">Collapse all</button>
+    </div>
+    <table id="resultsTable">
+      <thead>
+        <tr>
+          <th style="width:70px">Dim</th>
+          <th style="width:80px">ID</th>
+          <th>Title</th>
+          <th>Tags</th>
+          <th style="width:90px; text-align:center">Score</th>
+          <th style="width:30px"></th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        
+      </tbody>
+    </table>
+  </div>
 
-  
+</div>
 
+
+<div class="pillar-header pillar-frontier">
+  <div class="pillar-inner">
+    <div class="pillar-left">
+      <span class="pillar-num pillar-num-2">Pillar 2</span>
+      <h2 class="pillar-title">Frontier Benchmarks</h2>
+      <p class="pillar-desc">Quantitative and behavioural tests drawn from current academic research on AI honesty, deception, manipulation, and linguistic bias. These methods detect subtle failures that rubric-based scoring may miss — sycophancy, pressure capitulation, sentiment asymmetry, and word-level framing differences across demographic groups.</p>
+    </div>
+    <div class="pillar-methods">
+      <div class="pillar-sources-label">Methods included:</div>
+      <div class="pillar-methods-list">
+        <span class="pillar-method-tag">VADER Sentiment</span>
+        <span class="pillar-method-tag">WEAT Embeddings</span>
+        <span class="pillar-method-tag">DarkBench · Kran et al. 2025</span>
+        <span class="pillar-method-tag">PersuSafety · Liu et al. 2025</span>
+        <span class="pillar-method-tag">DeceptionBench · Huang et al. 2025</span>
+        <span class="pillar-method-tag">BeHonest · Chern et al. 2024</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container container-frontier">
+  
+  
   
   <div class="section frontier-section">
 
@@ -1676,54 +1789,6 @@ For these reasons, it's crucial to use my input as a starting point for further 
     }
   }
   </script>
-
-  <div class="section">
-    <h2>Test Case Results</h2>
-    
-    <div class="stats-bar">
-        <div class="stat-item"><span class="stat-num">0</span><span class="stat-lbl">Tests run</span></div>
-        <div class="stat-item"><span class="stat-num">0</span><span class="stat-lbl">Scored</span></div>
-        <div class="stat-item"><span class="stat-num">0</span><span class="stat-lbl">Errors</span></div>
-        <div class="stat-item"><span class="stat-num">0</span><span class="stat-lbl">Red flags</span></div>
-        <div class="stat-item"><span class="stat-num "">No</span><span class="stat-lbl">Auto-fail</span></div>
-    </div>
-    <div class="filter-bar">
-      <input type="text" id="searchInput" placeholder="Search by title or test ID..." oninput="filterTable()">
-      <select id="dimFilter" onchange="filterTable()">
-        <option value="">All dimensions</option>
-        <option value="D1">D1 — Fairness and Non-Discrimination</option>
-        <option value="D2">D2 — Truthfulness and Non-Deception</option>
-        <option value="D3">D3 — Transparency and Explainability</option>
-        <option value="D4">D4 — Suitability and Fair Treatment</option>
-        <option value="D5">D5 — Recourse and Human Oversight</option>
-        <option value="D6">D6 — Governance and Monitoring</option>
-      </select>
-      <select id="scoreFilter" onchange="filterTable()">
-        <option value="">All scores</option>
-        <option value="strong">Strong (4–5)</option>
-        <option value="weak">Weak (1–2)</option>
-        <option value="error">Errors only</option>
-      </select>
-      <button class="filter-btn" onclick="expandAll()">Expand all</button>
-      <button class="filter-btn" onclick="collapseAll()">Collapse all</button>
-    </div>
-    <table id="resultsTable">
-      <thead>
-        <tr>
-          <th style="width:70px">Dim</th>
-          <th style="width:80px">ID</th>
-          <th>Title</th>
-          <th>Tags</th>
-          <th style="width:90px; text-align:center">Score</th>
-          <th style="width:30px"></th>
-        </tr>
-      </thead>
-      <tbody id="tableBody">
-        
-      </tbody>
-    </table>
-  </div>
-
 </div>
 
 <script>

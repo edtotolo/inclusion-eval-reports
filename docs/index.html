@@ -354,8 +354,8 @@
 <nav>
   <a href="#" class="nav-brand"><span class="dot"></span> Inclusion Eval</a>
   <div class="nav-links">
+    <a href="#approach">Methodology</a>
     <a href="#dimensions">Dimensions</a>
-    <a href="#sample">Sample Result</a>
     <a href="#how-it-works">How It Works</a>
     <a href="#reports">Reports</a>
     <a href="manual.html">Documentation</a>
@@ -431,11 +431,93 @@
   </div>
 </section>
 
+<!-- TWO-PILLAR APPROACH -->
+<section id="approach" style="background: var(--white); padding: 80px 40px;">
+  <div class="container">
+    <div class="section-label">Methodology</div>
+    <h2 class="section-title">Two complementary approaches to AI evaluation</h2>
+    <p class="section-sub" style="margin-bottom: 48px;">
+      Inclusion Eval combines a structured rubric-based assessment grounded in responsible finance principles
+      with a suite of frontier academic benchmarks that detect subtler behavioural failures.
+    </p>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+
+      <!-- Pillar 1 -->
+      <div style="background: #0f172a; border-radius: 16px; padding: 36px; border-top: 4px solid #2563eb;">
+        <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #60a5fa; margin-bottom: 10px;">Pillar 1</div>
+        <h3 style="font-size: 22px; font-weight: 800; color: white; margin-bottom: 12px;">AI-Based Evaluation</h3>
+        <p style="font-size: 14px; color: #94a3b8; line-height: 1.7; margin-bottom: 24px;">
+          Forty test cases across six dimensions, scored by Claude Opus using rubrics grounded in
+          established international standards for financial consumer protection.
+          Produces a composite score (0–100), dimension breakdown, red flags, and auto-fail detection.
+        </p>
+        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #64748b; margin-bottom: 10px;">Grounded in international standards:</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 24px;">
+          <span style="font-size: 12px; color: #cbd5e1; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); padding: 4px 10px; border-radius: 4px;">OECD Principles on Financial Consumer Protection</span>
+          <span style="font-size: 12px; color: #cbd5e1; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); padding: 4px 10px; border-radius: 4px;">SPTF/Cerise Universal Standards</span>
+          <span style="font-size: 12px; color: #cbd5e1; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); padding: 4px 10px; border-radius: 4px;">BTCA Digital Finance Principles</span>
+          <span style="font-size: 12px; color: #cbd5e1; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); padding: 4px 10px; border-radius: 4px;">CGAP Customer Protection Principles</span>
+          <span style="font-size: 12px; color: #cbd5e1; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); padding: 4px 10px; border-radius: 4px;">Smart Campaign Client Protection Principles</span>
+          <span style="font-size: 12px; color: #cbd5e1; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); padding: 4px 10px; border-radius: 4px;">AFI Consumer Empowerment Guidelines</span>
+          <span style="font-size: 12px; color: #cbd5e1; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); padding: 4px 10px; border-radius: 4px;">G20 Financial Inclusion Action Plan</span>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+          <span style="font-size: 13px; color: white; background: rgba(37,99,235,0.3); border: 1px solid rgba(37,99,235,0.5); padding: 6px 14px; border-radius: 6px;">6 dimensions</span>
+          <span style="font-size: 13px; color: white; background: rgba(37,99,235,0.3); border: 1px solid rgba(37,99,235,0.5); padding: 6px 14px; border-radius: 6px;">40 test cases</span>
+          <span style="font-size: 13px; color: white; background: rgba(37,99,235,0.3); border: 1px solid rgba(37,99,235,0.5); padding: 6px 14px; border-radius: 6px;">LLM judge: Claude Opus</span>
+          <span style="font-size: 13px; color: white; background: rgba(37,99,235,0.3); border: 1px solid rgba(37,99,235,0.5); padding: 6px 14px; border-radius: 6px;">6 auto-fail conditions</span>
+        </div>
+      </div>
+
+      <!-- Pillar 2 -->
+      <div style="background: #1e1b4b; border-radius: 16px; padding: 36px; border-top: 4px solid #6366f1;">
+        <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #a5b4fc; margin-bottom: 10px;">Pillar 2</div>
+        <h3 style="font-size: 22px; font-weight: 800; color: white; margin-bottom: 12px;">Frontier Benchmarks</h3>
+        <p style="font-size: 14px; color: #94a3b8; line-height: 1.7; margin-bottom: 24px;">
+          Academic benchmarks from current AI safety research, detecting behaviours
+          that structured rubrics may miss: sycophancy, pressure capitulation, deception,
+          honesty failures, and systematic bias in tone and language framing.
+        </p>
+        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #64748b; margin-bottom: 10px;">Methods included:</div>
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px;">
+          <div style="display: flex; align-items: flex-start; gap: 10px;">
+            <span style="font-size: 11px; color: #c7d2fe; background: rgba(99,102,241,0.2); border: 1px solid rgba(99,102,241,0.35); padding: 2px 8px; border-radius: 4px; white-space: nowrap; margin-top: 2px;">VADER</span>
+            <span style="font-size: 13px; color: #94a3b8;">Sentiment polarity comparison across matched demographic pairs</span>
+          </div>
+          <div style="display: flex; align-items: flex-start; gap: 10px;">
+            <span style="font-size: 11px; color: #c7d2fe; background: rgba(99,102,241,0.2); border: 1px solid rgba(99,102,241,0.35); padding: 2px 8px; border-radius: 4px; white-space: nowrap; margin-top: 2px;">WEAT</span>
+            <span style="font-size: 13px; color: #94a3b8;">Word embedding association test — financial language framing bias</span>
+          </div>
+          <div style="display: flex; align-items: flex-start; gap: 10px;">
+            <span style="font-size: 11px; color: #c7d2fe; background: rgba(99,102,241,0.2); border: 1px solid rgba(99,102,241,0.35); padding: 2px 8px; border-radius: 4px; white-space: nowrap; margin-top: 2px;">DarkBench</span>
+            <span style="font-size: 13px; color: #94a3b8;">Sycophancy — does the AI validate false financial beliefs? <em style="color:#6b7280">Kran et al. 2025</em></span>
+          </div>
+          <div style="display: flex; align-items: flex-start; gap: 10px;">
+            <span style="font-size: 11px; color: #c7d2fe; background: rgba(99,102,241,0.2); border: 1px solid rgba(99,102,241,0.35); padding: 2px 8px; border-radius: 4px; white-space: nowrap; margin-top: 2px;">PersuSafety</span>
+            <span style="font-size: 13px; color: #94a3b8;">Pressure resistance — does the AI cave under escalating user pressure? <em style="color:#6b7280">Liu et al. 2025</em></span>
+          </div>
+          <div style="display: flex; align-items: flex-start; gap: 10px;">
+            <span style="font-size: 11px; color: #c7d2fe; background: rgba(99,102,241,0.2); border: 1px solid rgba(99,102,241,0.35); padding: 2px 8px; border-radius: 4px; white-space: nowrap; margin-top: 2px;">DeceptionBench</span>
+            <span style="font-size: 13px; color: #94a3b8;">Consistency across multi-turn economic scenarios <em style="color:#6b7280">Huang et al. 2025</em></span>
+          </div>
+          <div style="display: flex; align-items: flex-start; gap: 10px;">
+            <span style="font-size: 11px; color: #c7d2fe; background: rgba(99,102,241,0.2); border: 1px solid rgba(99,102,241,0.35); padding: 2px 8px; border-radius: 4px; white-space: nowrap; margin-top: 2px;">BeHonest</span>
+            <span style="font-size: 13px; color: #94a3b8;">Self-knowledge, non-deceptiveness, non-manipulation <em style="color:#6b7280">Chern et al. 2024</em></span>
+          </div>
+        </div>
+        <p style="font-size: 12px; color: #6366f1; font-style: italic;">This suite is continuously updated as new academic methods become available.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 <!-- DIMENSIONS -->
 <section id="dimensions">
   <div class="container">
     <div class="section-header">
-      <div class="section-label">Evaluation Framework</div>
+      <div class="section-label">Pillar 1 — Evaluation Framework</div>
       <h2 class="section-title">Six dimensions. One composite score.</h2>
       <p class="section-sub">
         Each dimension targets a different failure mode. A high composite score with a triggered auto-fail
@@ -683,8 +765,8 @@
     <div class="section-label">Evaluation Reports</div>
     <h2 class="section-title">Published assessments</h2>
     <p class="section-sub" style="margin-bottom: 32px;">
-      Click any report to open the full interactive dashboard — scores, red flags,
-      and every prompt and response expandable by click.
+      Click any report to open the full interactive dashboard — scores, red flags, and every prompt and response expandable by click.
+      Reports marked <span style="font-size:12px; background:#eef2ff; color:#4338ca; padding:2px 8px; border-radius:4px; font-weight:700;">FRONTIER</span> contain only Pillar 2 benchmark results.
     </p>
 
     <table id="reports-table">
@@ -693,13 +775,14 @@
           <th>Date</th>
           <th>AI Application</th>
           <th>Composite</th>
+          <th>Frontier</th>
           <th>Red Flags</th>
           <th>Auto-Fail</th>
           <th>Verdict</th>
         </tr>
       </thead>
       <tbody id="reports-tbody">
-        <tr><td colspan="6" class="no-reports">Loading reports…</td></tr>
+        <tr><td colspan="7" class="no-reports">Loading reports…</td></tr>
       </tbody>
     </table>
   </div>
@@ -739,6 +822,9 @@
   }
 
   function verdictHtml(r) {
+    if (r.verdict === "frontier_only") {
+      return '<span style="background:#eef2ff;color:#4338ca;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:700;">FRONTIER</span>';
+    }
     if (r.verdict === "pass" || (!r.auto_fail && r.composite_score >= 80)) {
       return '<span class="verdict-pass">PASS</span>';
     }
@@ -751,20 +837,25 @@
   function renderTable(reports) {
     const tbody = document.getElementById("reports-tbody");
     if (!reports || reports.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" class="no-reports">No reports published yet.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" class="no-reports">No reports published yet.</td></tr>';
       return;
     }
     tbody.innerHTML = reports.map(r => {
-      const sc = r.composite_score != null ? r.composite_score.toFixed(1) : "—";
-      const scClass = r.composite_score != null ? scoreClass(r.composite_score) : "";
+      const isFrontierOnly = r.verdict === "frontier_only";
+      const sc = (!isFrontierOnly && r.composite_score != null) ? r.composite_score.toFixed(1) : '<span style="color:#94a3b8;font-size:13px">—</span>';
+      const scClass = (!isFrontierOnly && r.composite_score != null) ? scoreClass(r.composite_score) : "";
+      const fs = r.frontier_score != null ? r.frontier_score.toFixed(1) : '<span style="color:#94a3b8;font-size:13px">—</span>';
+      const fsClass = r.frontier_score != null ? scoreClass(r.frontier_score) : "";
       const af = r.auto_fail
         ? '<span class="autofail-tag">YES</span>'
         : '<span style="color:#94a3b8;font-size:13px">—</span>';
+      const rf = r.red_flag_count != null ? r.red_flag_count : "—";
       return `<tr>
         <td>${r.date || "—"}</td>
         <td><a href="${r.file}">${r.label}</a></td>
         <td class="score-cell ${scClass}">${sc}</td>
-        <td style="text-align:center">${r.red_flag_count != null ? r.red_flag_count : "—"}</td>
+        <td class="score-cell ${fsClass}">${fs}</td>
+        <td style="text-align:center">${rf}</td>
         <td style="text-align:center">${af}</td>
         <td>${verdictHtml(r)}</td>
       </tr>`;
