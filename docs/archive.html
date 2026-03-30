@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inclusion Eval — Report Archive</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #0f172a; --slate: #1e293b; --mid: #475569; --light: #94a3b8;
+    --border: #e2e8f0; --bg: #f8fafc; --white: #ffffff; --blue: #2563eb;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--slate); line-height: 1.6; }
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,0.95); backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px; display: flex; align-items: center; justify-content: space-between; height: 60px;
+  }
+  .nav-brand { font-weight: 700; font-size: 15px; color: var(--navy); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+  .nav-brand .dot { width: 8px; height: 8px; background: var(--blue); border-radius: 50%; }
+  .nav-back { font-size: 14px; color: var(--mid); text-decoration: none; font-weight: 500; }
+  .nav-back:hover { color: var(--navy); }
+  .page-header { background: var(--navy); color: white; padding: 56px 40px 48px; }
+  .page-header .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #60a5fa; margin-bottom: 12px; }
+  .page-header h1 { font-size: 32px; font-weight: 800; margin-bottom: 12px; }
+  .page-header p { font-size: 15px; color: #94a3b8; max-width: 580px; line-height: 1.7; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 48px 40px; }
+  .archive-note {
+    background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px;
+    padding: 16px 20px; margin-bottom: 32px;
+    font-size: 14px; color: #92400e; line-height: 1.6;
+  }
+  .archive-note strong { color: #78350f; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; background: white; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+  thead { background: var(--navy); color: white; }
+  th { text-align: left; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; padding: 14px 16px; }
+  td { padding: 14px 16px; border-bottom: 1px solid var(--border); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f8fafc; }
+  td a { color: var(--blue); text-decoration: none; font-weight: 600; }
+  td a:hover { text-decoration: underline; }
+  .score-cell { font-weight: 700; font-size: 16px; }
+  .score-high { color: #16a34a; }
+  .score-mid { color: #d97706; }
+  .score-low { color: #dc2626; }
+  .verdict-conditional { background: #fef3c7; color: #92400e; padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+  .verdict-pass { background: #dcfce7; color: #166534; padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+  .verdict-fail { background: #fee2e2; color: #991b1b; padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+  .frontier-tag { background: #eef2ff; color: #4338ca; padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+  .autofail-tag { display: inline-block; font-size: 10px; font-weight: 700; background: #fee2e2; color: #991b1b; padding: 2px 6px; border-radius: 3px; margin-left: 6px; vertical-align: middle; }
+  .run-group { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #94a3b8; background: #f8fafc; padding: 10px 16px; border-bottom: 1px solid var(--border); }
+  footer { background: var(--navy); color: #94a3b8; padding: 32px 40px; text-align: center; font-size: 13px; margin-top: 40px; }
+  footer a { color: #60a5fa; text-decoration: none; }
+  footer .brand { font-size: 15px; font-weight: 700; color: white; margin-bottom: 6px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-brand"><span class="dot"></span> Inclusion Eval</a>
+  <a href="index.html" class="nav-back">← Back to current reports</a>
+</nav>
+
+<div class="page-header">
+  <div class="eyebrow">Report Archive</div>
+  <h1>Earlier evaluation runs</h1>
+  <p>These reports were produced during earlier development phases of Inclusion Eval. Methodology, test cases, and scoring rubrics have since been updated. They are preserved here for reference and continuity.</p>
+</div>
+
+<div class="container">
+  <div class="archive-note">
+    <strong>Note on comparability:</strong> Earlier runs used fewer test cases, different D1 fairness test formats, or were run before the Frontier Benchmarks suite was added. Scores across different run generations should not be directly compared.
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>AI Application</th>
+        <th>Run type</th>
+        <th>Composite</th>
+        <th>Frontier</th>
+        <th>Auto-Fail</th>
+        <th>Verdict</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="run-group" colspan="7">2026-03 — V2 Development Runs</td>
+      </tr>
+      <tr>
+        <td>2026-03-19</td>
+        <td><a href="haiku_v2_baseline_report.html">Claude Haiku — V2 Baseline</a></td>
+        <td>AI eval only</td>
+        <td class="score-cell score-high">81.5</td>
+        <td style="color:#94a3b8;font-size:13px">—</td>
+        <td style="text-align:center"><span class="autofail-tag">YES</span></td>
+        <td><span class="verdict-conditional">CONDITIONAL</span></td>
+      </tr>
+      <tr>
+        <td>2026-03-20</td>
+        <td><a href="gpt4o_v2_report.html">ChatGPT GPT-4o — Run 1</a></td>
+        <td>AI eval only</td>
+        <td class="score-cell score-mid">63.7</td>
+        <td style="color:#94a3b8;font-size:13px">—</td>
+        <td style="text-align:center"><span class="autofail-tag">YES</span></td>
+        <td><span class="verdict-conditional">CONDITIONAL</span></td>
+      </tr>
+      <tr>
+        <td>2026-03-20</td>
+        <td><a href="gpt4o_v2_run2_report.html">ChatGPT GPT-4o — Run 2 (with VADER + WEAT)</a></td>
+        <td>AI eval + NLP</td>
+        <td class="score-cell score-mid">69.0</td>
+        <td style="color:#94a3b8;font-size:13px">—</td>
+        <td style="text-align:center"><span class="autofail-tag">YES</span></td>
+        <td><span class="verdict-conditional">CONDITIONAL</span></td>
+      </tr>
+      <tr>
+        <td>2026-03-23</td>
+        <td><a href="gpt4o_fairness_report.html">ChatGPT GPT-4o — Fairness Run (multi-turn)</a></td>
+        <td>D1 only + NLP</td>
+        <td class="score-cell score-mid">67.4</td>
+        <td style="color:#94a3b8;font-size:13px">—</td>
+        <td style="text-align:center"><span class="autofail-tag">YES</span></td>
+        <td><span class="verdict-conditional">CONDITIONAL</span></td>
+      </tr>
+      <tr>
+        <td>2026-03-30</td>
+        <td><a href="gpt4o_frontier_report.html">ChatGPT GPT-4o — Frontier Suite only</a></td>
+        <td>Frontier only</td>
+        <td style="color:#94a3b8;font-size:13px">—</td>
+        <td class="score-cell score-mid">70.1</td>
+        <td style="text-align:center" style="color:#94a3b8;font-size:13px">—</td>
+        <td><span class="frontier-tag">FRONTIER</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<footer>
+  <div class="brand">Inclusion Eval</div>
+  <p>Fairness testing for AI in finance and commerce</p>
+  <p style="margin-top:8px"><a href="index.html">Current reports</a> &nbsp;·&nbsp; <a href="manual.html">Documentation</a> &nbsp;·&nbsp; <a href="https://github.com/edtotolo/inclusion-eval-reports">GitHub</a></p>
+</footer>
+
+</body>
+</html>

@@ -358,6 +358,7 @@
     <a href="#dimensions">Dimensions</a>
     <a href="#how-it-works">How It Works</a>
     <a href="#reports">Reports</a>
+    <a href="archive.html">Archive</a>
     <a href="manual.html">Documentation</a>
   </div>
   <a href="#reports" class="nav-cta">View Reports →</a>
@@ -764,9 +765,12 @@
   <div class="container">
     <div class="section-label">Evaluation Reports</div>
     <h2 class="section-title">Published assessments</h2>
-    <p class="section-sub" style="margin-bottom: 32px;">
-      Click any report to open the full interactive dashboard — scores, red flags, and every prompt and response expandable by click.
-      Reports marked <span style="font-size:12px; background:#eef2ff; color:#4338ca; padding:2px 8px; border-radius:4px; font-weight:700;">FRONTIER</span> contain only Pillar 2 benchmark results.
+    <p class="section-sub" style="margin-bottom: 24px;">
+      Each report covers both pillars: a full AI-based evaluation (40 test cases, 6 dimensions, Claude Opus judge) and the complete Frontier Benchmarks suite. Click any report to open the interactive dashboard.
+    </p>
+    <p style="font-size:13px; color: var(--mid); margin-bottom: 32px;">
+      Looking for earlier development runs?
+      <a href="archive.html" style="color:var(--blue); font-weight:600; text-decoration:none;">View the report archive →</a>
     </p>
 
     <table id="reports-table">
@@ -794,6 +798,8 @@
   <p>Fairness testing for AI in finance and commerce</p>
   <p style="margin-top:8px">
     <a href="manual.html">Documentation</a>
+    &nbsp;·&nbsp;
+    <a href="archive.html">Report Archive</a>
     &nbsp;·&nbsp;
     <a href="https://github.com/edtotolo/inclusion-eval-reports">GitHub</a>
     &nbsp;·&nbsp;
@@ -837,7 +843,7 @@
   function renderTable(reports) {
     const tbody = document.getElementById("reports-tbody");
     if (!reports || reports.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="7" class="no-reports">No reports published yet.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" class="no-reports">New full evaluations (AI eval + Frontier suite) coming soon. <a href="archive.html" style="color:#2563eb;font-weight:600;">View earlier runs in the archive →</a></td></tr>';
       return;
     }
     tbody.innerHTML = reports.map(r => {
