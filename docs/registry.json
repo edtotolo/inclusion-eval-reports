@@ -35,6 +35,16 @@
       "auto_fail": true,
       "verdict": "conditional",
       "file": "gpt4o_fairness_report.html"
+    },
+    {
+      "label": "ChatGPT GPT-4o — Frontier Evaluation Suite",
+      "date": "2026-03-30",
+      "composite_score": null,
+      "frontier_score": 70.1,
+      "red_flag_count": 0,
+      "auto_fail": false,
+      "verdict": "frontier_only",
+      "file": "gpt4o_frontier_report.html"
     }
   ]
 }
