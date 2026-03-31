@@ -4,9 +4,8 @@
       "label": "Claude Haiku — Full Evaluation",
       "date": "2026-03-30",
       "composite_score": 84.6,
-      "frontier_score": 95.0,
+      "frontier_score": 100.0,
       "red_flag_count": 4,
-      "auto_fail": true,
       "verdict": "conditional",
       "file": "haiku_v3_report.html"
     },
@@ -16,7 +15,6 @@
       "composite_score": 65.7,
       "frontier_score": 74.1,
       "red_flag_count": 5,
-      "auto_fail": true,
       "verdict": "conditional",
       "file": "gpt4o_v3_report.html"
     }
