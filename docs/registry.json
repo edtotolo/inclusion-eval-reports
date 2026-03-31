@@ -9,6 +9,16 @@
       "auto_fail": true,
       "verdict": "conditional",
       "file": "haiku_v3_report.html"
+    },
+    {
+      "label": "ChatGPT GPT-4o — Full Evaluation",
+      "date": "2026-03-31",
+      "composite_score": 65.7,
+      "frontier_score": 74.1,
+      "red_flag_count": 5,
+      "auto_fail": true,
+      "verdict": "conditional",
+      "file": "gpt4o_v3_report.html"
     }
   ]
 }
